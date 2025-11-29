@@ -5,11 +5,12 @@ import { AppContext } from "../context/AppContext"
 import { motion } from "motion/react"
 import axios from 'axios'
 import { toast } from "react-toastify"
+import { BACKEND_URL } from "../config/config"
 
 const Login = () => {
 
     const [state, setState] = useState('Login')
-    const { setShowLogin, backendUrl, setToken, setUser } = useContext(AppContext)
+    const { setShowLogin, setToken, setUser } = useContext(AppContext)
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -21,7 +22,7 @@ const Login = () => {
         try {
             
             if(state === 'Login'){
-                const {data} = await axios.post(backendUrl + '/api/user/login', {email, password})
+                const {data} = await axios.post(BACKEND_URL + '/api/user/login', {email, password})
 
                 if(data.success){
                     setToken(data.token)
@@ -32,7 +33,7 @@ const Login = () => {
                     toast.error(data.message)
                 }
             }else{
-                const {data} = await axios.post(backendUrl + '/api/user/register', {name, email, password})
+                const {data} = await axios.post(BACKEND_URL + '/api/user/register', {name, email, password})
 
                 if(data.success){
                     setToken(data.token)

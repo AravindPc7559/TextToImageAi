@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { BACKEND_URL } from "../config/config";
 
 export const AppContext = createContext();
 
@@ -14,13 +15,11 @@ const AppContextProvider = (props) => {
 
     const [credit, setCredit] = useState(false)
 
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
-
     const navigate = useNavigate()
 
     const loadCreditsData = async () => {
         try {
-            const { data } = await axios.get(backendUrl + '/api/user/credits', { headers: { token } })
+            const { data } = await axios.get(BACKEND_URL + '/api/user/credits', { headers: { token } })
 
             if (data.success) {
                 setCredit(data.credits)
@@ -34,7 +33,7 @@ const AppContextProvider = (props) => {
 
     const generateImage = async (prompt) => {
         try {
-            const { data } = await axios.post(backendUrl + '/api/image/generate-image',
+            const { data } = await axios.post(BACKEND_URL + '/api/image/generate-image',
                 { prompt }, { headers: { token } })
 
             if (data.success) {
@@ -65,7 +64,7 @@ const AppContextProvider = (props) => {
     }, [token])
 
     const value = {
-        user, setUser, showLogin, setShowLogin, backendUrl, token,
+        user, setUser, showLogin, setShowLogin, token,
         setToken, credit, setCredit, loadCreditsData, logout, generateImage
     }
 
