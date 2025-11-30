@@ -4,14 +4,16 @@ import 'dotenv/config'
 import connectDB from './config/mongodb.js'
 import userRouter from './routes/userRoutes.js'
 import imageRouter from './routes/imageRoutes.js'
+import { getCorsOrigins } from './utils/corsUtils.js'
 
 const PORT = process.env.PORT || 4000
 const app = express()
 
 
 app.use(express.json())
+
 app.use(cors({
-    origin: process.env.CORS_URLS,
+    origin: getCorsOrigins(),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
