@@ -41,8 +41,8 @@ export const getCorsOrigins = () => {
         .filter(url => {
             // Filter out invalid URLs and non-URL strings
             if (!url) return false
-            // Remove any that look like API endpoints (they shouldn't be in CORS origins)
-            if (url.includes('/api/') || url.includes('/text-to-image/v1')) return false
+            // Note: CORS origins should be frontend URLs, not API endpoints
+            // But we'll allow all URLs you specify and let you decide
             return true
         })
     
