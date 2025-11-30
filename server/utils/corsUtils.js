@@ -24,6 +24,15 @@ export const getCorsOrigins = () => {
     }
     
     // Remove duplicates and filter out empty values
-    return [...new Set(origins.filter(Boolean))]
+    const finalOrigins = [...new Set(origins.filter(Boolean))]
+    
+    // Log for debugging (remove in production if needed)
+    if (finalOrigins.length === 0) {
+        console.warn('⚠️  WARNING: No CORS origins configured! Set CORS_URLS, CLIENT_URL, or CLIENT_LOCAL environment variables.')
+    } else {
+        console.log('✅ CORS origins configured:', finalOrigins)
+    }
+    
+    return finalOrigins
 }
 
