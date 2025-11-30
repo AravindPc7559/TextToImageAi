@@ -4,31 +4,60 @@ import 'dotenv/config'
 import connectDB from './config/mongodb.js'
 import userRouter from './routes/userRoutes.js'
 import imageRouter from './routes/imageRoutes.js'
-import { getCorsOrigins } from './utils/corsUtils.js'
 
 const PORT = process.env.PORT || 4000
 const app = express()
 
-
 app.use(express.json())
 
-// Get allowed origins
+// Parse CORS origins from environment variable
+const getCorsOrigins = () => {
+    const origins = []
+    
+    // Parse CORS_URLS (comma-separated string)
+    if (process.env.CORS_URLS) {
+        origins.push(...process.env.CORS_URLS.split(',').map(url => url.trim()).filter(Boolean))
+    }
+    
+    // Add CLIENT_URL if provided
+    if (process.env.CLIENT_URL) {
+        origins.push(process.env.CLIENT_URL.trim())
+    }
+    
+    // Add CLIENT_LOCAL if provided
+    if (process.env.CLIENT_LOCAL) {
+        origins.push(process.env.CLIENT_LOCAL.trim())
+    }
+    
+    return [...new Set(origins.filter(Boolean))]
+}
+
 const allowedOrigins = getCorsOrigins()
 
-// CORS configuration with dynamic origin checking
+// Log configured origins on startup
+console.log('🌐 CORS Configuration:')
+if (allowedOrigins.length === 0) {
+    console.warn('⚠️  WARNING: No CORS origins configured!')
+    console.warn('   Set CORS_URLS, CLIENT_URL, or CLIENT_LOCAL environment variables')
+} else {
+    console.log('✅ Allowed CORS origins:')
+    allowedOrigins.forEach(origin => console.log(`   - ${origin}`))
+}
+
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) {
             return callback(null, true)
         }
         
-        // Check if origin is in allowed list
-        if (allowedOrigins.includes(origin)) {
+        const normalizedOrigin = origin.replace(/\/$/, '')
+        const normalizedAllowed = allowedOrigins.map(o => o.replace(/\/$/, ''))
+        
+        if (normalizedAllowed.includes(normalizedOrigin) || allowedOrigins.includes(origin)) {
             callback(null, true)
         } else {
             console.warn(`❌ CORS blocked origin: ${origin}`)
-            console.log('✅ Allowed origins:', allowedOrigins)
+            console.log('   Allowed origins:', allowedOrigins)
             callback(new Error('Not allowed by CORS'))
         }
     },
